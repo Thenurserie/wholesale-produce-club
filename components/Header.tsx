@@ -1,0 +1,1 @@
+// File cleared. Application now runs via index.html

@@ -1,0 +1,2316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Nurserie - Wholesale Produce Club</title>
+    <meta name="description" content="The professional wholesale produce division of The Nurserie. Source farm-fresh crates directly for Restaurants, Schools, and Families.">
+    
+    <!-- Open Graph / Facebook / iMessage -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://thenurserie-wholesale.vercel.app/">
+    <meta property="og:title" content="The Nurserie Wholesale | Direct to You">
+    <meta property="og:description" content="Join the Wholesale Produce Club. AI-powered procurement, local farm sourcing, and institutional analytics.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://thenurserie-wholesale.vercel.app/">
+    <meta property="twitter:title" content="The Nurserie Wholesale | Direct to You">
+    <meta property="twitter:description" content="Join the Wholesale Produce Club. AI-powered procurement, local farm sourcing, and institutional analytics.">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap');
+      
+      /* Font handling for different scripts */
+      body { font-family: 'Inter', sans-serif; }
+      body.lang-zh { font-family: 'Noto Sans SC', sans-serif; }
+      body.lang-hi { font-family: 'Noto Sans Devanagari', sans-serif; }
+      
+      h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
+      body.lang-zh h1, body.lang-zh h2, body.lang-zh h3 { font-family: 'Noto Sans SC', sans-serif; font-weight: 700; }
+      body.lang-hi h1, body.lang-hi h2, body.lang-hi h3 { font-family: 'Noto Sans Devanagari', sans-serif; font-weight: 700; }
+      
+      /* Simple fade animation */
+      .fade-in { animation: fadeIn 0.3s ease-in-out; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      
+      /* Slide in animation for mobile menu */
+      .slide-in { animation: slideIn 0.3s ease-out forwards; }
+      @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+      /* Toast Animation */
+      .toast-enter { animation: toastEnter 0.3s ease-out forwards; }
+      @keyframes toastEnter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+      /* Microphone Pulse */
+      .mic-pulse { animation: pulse-red 1.5s infinite; }
+      @keyframes pulse-red {
+        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+      }
+
+      .loading-spinner {
+        border: 3px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 3px solid #059669;
+        width: 20px;
+        height: 20px;
+        -webkit-animation: spin 1s linear infinite; /* Safari */
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+      /* Hide scrollbar for horizontal filters */
+      .hide-scrollbar::-webkit-scrollbar { display: none; }
+      .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      /* Modal Backdrop */
+      .modal-backdrop { background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
+      
+      /* Freshness Bar */
+      .freshness-gradient { background: linear-gradient(90deg, #10b981 0%, #f59e0b 70%, #ef4444 100%); }
+
+      @media print {
+        body * { visibility: hidden; }
+        #print-area, #print-area * { visibility: visible; }
+        #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+      }
+
+      /* Toggle Switch */
+      .toggle-checkbox:checked {
+          right: 0;
+          border-color: #10b981;
+      }
+      .toggle-checkbox:checked + .toggle-label {
+          background-color: #10b981;
+      }
+    </style>
+
+    <script>
+      // Tailwind Config
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              emerald: { 50:'#ecfdf5', 100:'#d1fae5', 500:'#10b981', 600:'#059669', 800:'#065f46', 900:'#064e3b' },
+              stone: { 50:'#fafaf9', 100:'#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 800:'#292524', 900:'#1c1917' },
+              blue: { 900: '#1e3a8a', 50: '#eff6ff' } // Added for institutional feel
+            }
+          }
+        }
+      }
+      
+      // Polyfill for process.env access in browser (safe fallback)
+      window.process = window.process || { env: {} };
+    </script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Kitchen Mode / Voice FAB -->
+    <button id="voice-btn" onclick="toggleVoice()" class="fixed bottom-8 left-8 z-[90] bg-emerald-600 text-white p-4 rounded-full shadow-2xl hover:scale-105 transition-transform flex items-center justify-center group">
+        <svg id="mic-icon" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        <div id="voice-tooltip" class="absolute left-full ml-4 bg-stone-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            Kitchen Mode: Click to Speak Order
+        </div>
+    </button>
+
+    <!-- AUTH MODAL -->
+    <div id="auth-modal" class="fixed inset-0 z-[70] hidden items-center justify-center modal-backdrop p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+            <div class="flex border-b border-stone-100">
+                <button onclick="switchAuthTab('login')" id="tab-login" class="flex-1 py-4 text-center font-bold text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50 transition-colors">Login</button>
+                <button onclick="switchAuthTab('register')" id="tab-register" class="flex-1 py-4 text-center font-bold text-stone-400 hover:text-stone-600 transition-colors">Create Profile</button>
+            </div>
+            
+            <div class="p-8 relative">
+                <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-600">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+
+                <!-- Login Form -->
+                <div id="form-login" class="space-y-4">
+                    <h3 class="text-2xl font-serif font-bold text-stone-900 mb-2" data-i18n="auth_login_title">Welcome Back</h3>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Email</label>
+                        <input type="email" id="login-email" class="w-full p-3 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Password</label>
+                        <input type="password" id="login-pass" class="w-full p-3 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                    </div>
+                    <button onclick="handleLogin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg mt-4" data-i18n="btn_login">
+                        Sign In
+                    </button>
+                </div>
+
+                <!-- Register Form -->
+                <div id="form-register" class="space-y-3 hidden">
+                    <h3 class="text-2xl font-serif font-bold text-stone-900 mb-2" data-i18n="auth_register_title">Create Profile</h3>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Full Name</label>
+                        <input type="text" id="reg-name" class="w-full p-2.5 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Organization / Business (Optional)</label>
+                        <input type="text" id="reg-org" class="w-full p-2.5 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Email</label>
+                        <input type="email" id="reg-email" class="w-full p-2.5 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Phone</label>
+                        <input type="tel" id="reg-phone" class="w-full p-2.5 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Password</label>
+                        <input type="password" id="reg-pass" class="w-full p-2.5 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                    </div>
+                    <button onclick="handleRegister()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3 rounded-xl transition-all shadow-lg mt-2" data-i18n="btn_register">
+                        Create Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal (Hidden by default) -->
+    <div id="product-modal" class="fixed inset-0 z-[60] hidden items-center justify-center modal-backdrop p-4" onclick="closeProductModal()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col md:flex-row max-h-[90vh]" onclick="event.stopPropagation()">
+            <!-- Image Section -->
+            <div class="w-full md:w-1/2 h-64 md:h-auto relative bg-stone-100">
+                <img id="modal-img" src="" alt="Product" class="absolute inset-0 w-full h-full object-cover">
+                <button onclick="closeProductModal()" class="absolute top-4 left-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 md:hidden">
+                     <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <!-- Chef's Yield Badge -->
+                <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-2 rounded-lg border border-stone-200 shadow-lg">
+                    <p class="text-xs text-stone-500 font-bold uppercase" data-i18n="yield_label">Kitchen Yield</p>
+                    <p class="text-lg font-bold text-emerald-700"><span id="modal-yield"></span>% <span data-i18n="yield_usable">Usable</span></p>
+                </div>
+            </div>
+            <!-- Details Section -->
+            <div class="w-full md:w-1/2 p-8 flex flex-col overflow-y-auto">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <span id="modal-category" class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded"></span>
+                        <h2 id="modal-title" class="text-3xl font-serif font-bold text-stone-900 mt-2"></h2>
+                    </div>
+                    <button onclick="closeProductModal()" class="hidden md:block text-stone-400 hover:text-stone-800">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+
+                <p id="modal-desc" class="text-stone-600 text-lg mb-6 leading-relaxed"></p>
+
+                <!-- Analytics Grid -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-100">
+                        <p class="text-xs text-stone-400 uppercase font-bold mb-1" data-i18n="origin_storage">Origin & Storage</p>
+                        <p id="modal-origin" class="font-semibold text-stone-800 text-sm"></p>
+                        <p id="modal-shelf" class="text-xs text-stone-500 mt-1"></p>
+                    </div>
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-100">
+                        <p class="text-xs text-stone-400 uppercase font-bold mb-1" data-i18n="nutrients">Nutrients (Per Case)</p>
+                        <p class="font-semibold text-stone-800"><span id="modal-cals"></span> kCal</p>
+                        <p class="text-xs text-emerald-600 font-bold mt-1"><span id="modal-protein"></span>g Protein</p>
+                    </div>
+                </div>
+                
+                <div class="mt-auto pt-6 border-t border-stone-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <span id="modal-price" class="text-3xl font-bold text-emerald-700"></span>
+                            <span id="modal-unit" class="text-sm text-stone-400 font-medium ml-1"></span>
+                        </div>
+                        <div class="text-right">
+                             <span class="block text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-1 rounded-full" data-i18n="wholesale_price">Wholesale Price</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="flex items-center border border-stone-200 rounded-xl h-14 w-32">
+                            <button onclick="updateModalQty(-1)" class="w-10 h-full flex items-center justify-center hover:bg-stone-50 text-stone-500 text-xl">-</button>
+                            <input id="modal-qty-input" type="number" value="1" min="1" class="w-full h-full text-center text-lg font-bold border-0 focus:ring-0 p-0" readonly>
+                            <button onclick="updateModalQty(1)" class="w-10 h-full flex items-center justify-center hover:bg-stone-50 text-stone-500 text-xl">+</button>
+                        </div>
+                        <button id="modal-add-btn" class="flex-grow bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg rounded-xl shadow-lg shadow-emerald-200 transition-all transform active:scale-95 flex items-center justify-center gap-2" data-i18n="add_to_order">
+                            Add to Order
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-emerald-900/95 backdrop-blur-sm text-white sticky top-0 z-50 shadow-xl border-b border-emerald-800">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2 cursor-pointer group" onclick="switchView('home')">
+                    <svg class="h-8 w-8 text-emerald-400 group-hover:rotate-12 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                    <div>
+                        <h1 class="text-lg font-bold font-serif tracking-wide leading-none">The Nurserie</h1>
+                        <p class="text-[10px] uppercase tracking-widest text-emerald-300 group-hover:text-emerald-200">Wholesale Produce Club</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex items-center space-x-6">
+                    <button onclick="switchView('shop')" class="text-sm font-medium hover:text-emerald-300 transition-colors" data-i18n="nav_catalog">Catalog</button>
+                    <button onclick="switchView('planner')" class="text-sm font-medium hover:text-emerald-300 transition-colors" data-i18n="nav_planner">AI Planner</button>
+                    <button onclick="switchView('inventory')" class="text-sm font-medium hover:text-emerald-300 transition-colors" data-i18n="nav_inventory">My Inventory</button>
+                    <button onclick="switchView('seasonality')" class="text-sm font-medium hover:text-emerald-300 transition-colors" data-i18n="nav_forecast">Forecast</button>
+                    <button onclick="switchView('farmer')" class="text-xs bg-emerald-800 hover:bg-emerald-700 px-3 py-1.5 rounded-full text-emerald-100 transition-colors border border-emerald-700" data-i18n="nav_sell">Sell With Us</button>
+                </nav>
+
+                <!-- Right Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Language Selector -->
+                    <div class="relative">
+                        <button onclick="toggleLangMenu()" class="flex items-center gap-1 bg-emerald-800/50 hover:bg-emerald-700 px-3 py-1.5 rounded-lg transition-colors border border-emerald-700/50">
+                            <svg class="h-4 w-4 text-emerald-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            <span id="current-lang" class="text-xs font-bold uppercase tracking-wide">EN</span>
+                        </button>
+                        <div id="lang-menu" class="hidden absolute right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-stone-100 py-2 w-48 overflow-hidden z-50">
+                            <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-3 text-sm text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-3 border-b border-stone-50">
+                                <span class="text-lg">🇺🇸</span> English
+                            </button>
+                            <button onclick="changeLanguage('es')" class="w-full text-left px-4 py-3 text-sm text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-3 border-b border-stone-50">
+                                <span class="text-lg">🇪🇸</span> Español
+                            </button>
+                            <button onclick="changeLanguage('zh')" class="w-full text-left px-4 py-3 text-sm text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-3 border-b border-stone-50">
+                                <span class="text-lg">🇨🇳</span> 中文 (Mandarin)
+                            </button>
+                            <button onclick="changeLanguage('hi')" class="w-full text-left px-4 py-3 text-sm text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-3">
+                                <span class="text-lg">🇮🇳</span> हिन्दी (Hindi)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Auth / Profile Button -->
+                    <button id="auth-btn" onclick="handleAuthClick()" class="text-sm font-bold text-white hover:text-emerald-200 flex items-center gap-2">
+                        <span id="auth-text" data-i18n="nav_login">Login</span>
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </button>
+
+                    <!-- Cart Icon -->
+                    <div class="relative cursor-pointer p-2 hover:bg-emerald-800 rounded-full transition-colors group" onclick="switchView('cart')">
+                        <svg class="h-6 w-6 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/><path d="M4.5 11 10 4"/><path d="m9 11 1 9"/></svg>
+                        <span id="cart-badge" class="absolute top-0 right-0 hidden items-center justify-center w-5 h-5 text-[10px] font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-500 rounded-full shadow-sm border-2 border-emerald-900">0</span>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-1 text-emerald-100 hover:text-white">
+                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-black/50 z-50 hidden" onclick="toggleMobileMenu()">
+            <div class="absolute right-0 top-0 h-full w-72 bg-stone-50 shadow-2xl p-6 slide-in" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="font-serif font-bold text-xl text-emerald-900" data-i18n="mobile_menu">Menu</h2>
+                    <button onclick="toggleMobileMenu()" class="text-stone-400 hover:text-stone-800">
+                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <nav class="flex flex-col space-y-6">
+                    <button onclick="switchView('home'); toggleMobileMenu()" class="flex items-center space-x-3 text-lg font-medium text-stone-800"><span data-i18n="nav_home">Home</span></button>
+                    <button onclick="switchView('shop'); toggleMobileMenu()" class="flex items-center space-x-3 text-lg font-medium text-stone-800"><span data-i18n="nav_catalog">Wholesale Catalog</span></button>
+                    <button onclick="switchView('planner'); toggleMobileMenu()" class="flex items-center space-x-3 text-lg font-medium text-stone-800"><span data-i18n="nav_planner">AI Procurement</span></button>
+                    <button onclick="switchView('inventory'); toggleMobileMenu()" class="flex items-center space-x-3 text-lg font-medium text-stone-800"><span data-i18n="nav_inventory">My Inventory</span></button>
+                    <button onclick="switchView('seasonality'); toggleMobileMenu()" class="flex items-center space-x-3 text-lg font-medium text-stone-800"><span data-i18n="nav_forecast">Forecast</span></button>
+                    <button onclick="switchView('farmer'); toggleMobileMenu()" class="flex items-center space-x-3 text-lg font-medium text-emerald-700"><span data-i18n="nav_sell">Vendor Portal</span></button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="flex-grow container mx-auto px-4 py-8">
+        
+        <!-- PROFILE VIEW -->
+        <div id="view-profile" class="hidden fade-in">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="md:col-span-1">
+                     <div class="bg-white rounded-2xl shadow-lg border border-stone-100 p-6 text-center">
+                        <div class="w-24 h-24 bg-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center text-emerald-600 text-3xl font-bold" id="profile-avatar">
+                            <!-- Initials injected JS -->
+                        </div>
+                        <h2 id="profile-name" class="text-2xl font-serif font-bold text-stone-900"></h2>
+                        <p id="profile-org" class="text-emerald-600 font-medium mb-1"></p>
+                        <p id="profile-email" class="text-stone-500 text-sm mb-6"></p>
+                        
+                        <div class="border-t border-stone-100 pt-4 mb-4 text-left">
+                            <p class="text-xs font-bold text-stone-400 uppercase mb-2">My Subscriptions</p>
+                            <div class="bg-stone-50 p-3 rounded-lg text-sm text-stone-500 italic">
+                                No active standing orders.
+                            </div>
+                        </div>
+
+                        <button onclick="handleLogout()" class="w-full border border-stone-200 hover:bg-stone-50 text-stone-600 font-bold py-2 rounded-lg transition-colors text-sm" data-i18n="btn_logout">
+                            Log Out
+                        </button>
+                     </div>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <h3 class="text-2xl font-serif font-bold text-stone-900 mb-6" data-i18n="order_history">Order History</h3>
+                    <div class="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
+                         <div class="bg-stone-50 border-b border-stone-200 px-6 py-3 grid grid-cols-12 gap-4 text-xs font-bold text-stone-500 uppercase tracking-wider">
+                            <div class="col-span-3">Date</div>
+                            <div class="col-span-6">Items</div>
+                            <div class="col-span-3 text-right">Total</div>
+                         </div>
+                         <div id="order-history-list" class="divide-y divide-stone-100">
+                             <!-- History injected here -->
+                         </div>
+                         <div id="no-history" class="hidden p-12 text-center text-stone-400 italic">No orders yet.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOME VIEW -->
+        <div id="view-home" class="fade-in">
+            <div class="relative bg-emerald-900 text-white py-24 rounded-3xl overflow-hidden mb-16 shadow-2xl group">
+                <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80" alt="Produce Market" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-1000">
+                <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/90 via-emerald-900/30 to-transparent"></div>
+                <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+                    <span class="inline-flex items-center gap-2 py-1 px-3 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-100 text-sm font-semibold mb-8 tracking-wide backdrop-blur-md shadow-lg animate-bounce">
+                        <span class="w-2 h-2 bg-emerald-400 rounded-full"></span> <span data-i18n="hero_badge">OPEN TO PUBLIC & INSTITUTIONS</span>
+                    </span>
+                    <h1 class="text-5xl md:text-7xl font-serif font-bold mb-6 leading-tight drop-shadow-lg" data-i18n="hero_title">The Nurserie Wholesale.<br/>Direct to You.</h1>
+                    <p class="text-xl md:text-2xl text-emerald-50 mb-10 max-w-2xl mx-auto font-light drop-shadow-md leading-relaxed" data-i18n="hero_subtitle">Our premium wholesale division. Source farm-fresh produce for Restaurants, Schools, and Families directly from The Nurserie network.</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <button onclick="switchView('shop')" class="bg-emerald-500 hover:bg-emerald-400 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 transition-all hover:-translate-y-1 hover:shadow-xl">
+                            <span data-i18n="btn_start_order">Start Order</span>
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        </button>
+                        <button onclick="switchView('seasonality')" class="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white border border-white/30 px-8 py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2 transition-all hover:-translate-y-1" data-i18n="btn_forecast">
+                            Seasonal Forecast
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 text-center mb-12">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100 hover:shadow-lg transition-all duration-300 group">
+                    <div class="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600 group-hover:scale-110 transition-transform">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-stone-800 mb-2" data-i18n="feat_1_title">Inventory & Shelf Life</h3>
+                    <p class="text-stone-600 leading-relaxed" data-i18n="feat_1_desc">Track "Use By" dates automatically. We monitor shelf life so you reduce food waste and reorder just in time.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100 hover:shadow-lg transition-all duration-300 group">
+                    <div class="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600 group-hover:scale-110 transition-transform">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-stone-800 mb-2" data-i18n="feat_2_title">Local Farmer Direct</h3>
+                    <p class="text-stone-600 leading-relaxed" data-i18n="feat_2_desc">We onboard local growers directly. Restaurants can source hyper-local ingredients with wholesale logistics.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100 hover:shadow-lg transition-all duration-300 group">
+                    <div class="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600 group-hover:scale-110 transition-transform">
+                         <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-stone-800 mb-2" data-i18n="feat_3_title">Impact Analytics</h3>
+                    <p class="text-stone-600 leading-relaxed" data-i18n="feat_3_desc">Instantly see "Meals Provided" metrics and calories per dollar to maximize institutional budgets.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHOP VIEW -->
+        <div id="view-shop" class="hidden fade-in">
+             <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h2 class="text-4xl font-serif font-bold text-stone-900" data-i18n="shop_title">Bulk Catalog</h2>
+                    <p class="text-stone-500 mt-2 text-lg" data-i18n="shop_subtitle">Inventory & Shelf Life data updated daily.</p>
+                </div>
+                <div class="w-full md:w-80">
+                    <div class="relative group">
+                        <input type="text" id="shop-search" placeholder="Search produce..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-stone-200 bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all shadow-sm" oninput="renderFilteredProducts()">
+                        <svg class="h-5 w-5 text-stone-400 absolute left-3 top-3.5 group-hover:text-emerald-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="mb-8 flex overflow-x-auto gap-3 pb-4 hide-scrollbar" id="category-filters">
+                <!-- Injected via JS -->
+            </div>
+
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Products injected via JS -->
+            </div>
+            <div id="no-results" class="hidden text-center py-20">
+                <h3 class="text-xl font-bold text-stone-800">No products found</h3>
+                <p class="text-stone-500">Try adjusting your search terms or filters.</p>
+            </div>
+        </div>
+
+        <!-- INVENTORY VIEW -->
+        <div id="view-inventory" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-4xl font-serif font-bold text-stone-900" data-i18n="inventory_title">My Inventory</h2>
+                    <p class="text-stone-500 mt-2" data-i18n="inventory_subtitle">Track shelf life and reorder before spoilage.</p>
+                </div>
+                <button onclick="switchView('shop')" class="text-emerald-600 font-bold hover:text-emerald-700" data-i18n="btn_add_items">
+                    + Add Items
+                </button>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                <div class="bg-stone-50 border-b border-stone-200 px-6 py-4 grid grid-cols-12 gap-4 text-xs font-bold text-stone-500 uppercase tracking-wider">
+                    <div class="col-span-5 md:col-span-4">Product</div>
+                    <div class="col-span-3 md:col-span-2 text-center">Purchased</div>
+                    <div class="col-span-4 md:col-span-4 text-center">Freshness / Shelf Life</div>
+                    <div class="col-span-12 md:col-span-2 text-right md:text-center mt-2 md:mt-0">Action</div>
+                </div>
+                <div id="inventory-list" class="divide-y divide-stone-100">
+                    <!-- Inventory Items Injected JS -->
+                </div>
+                <div id="empty-inventory-msg" class="p-12 text-center hidden">
+                    <svg class="h-12 w-12 text-stone-300 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    <p class="text-stone-500">No active inventory.</p>
+                    <button onclick="switchView('shop')" class="mt-2 text-emerald-600 font-bold">Start Purchasing</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEASONALITY VIEW -->
+        <div id="view-seasonality" class="hidden fade-in">
+             <div class="text-center mb-12">
+                <span class="inline-block p-3 rounded-full bg-blue-50 text-blue-600 mb-4">
+                    <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                </span>
+                <h2 class="text-4xl font-serif font-bold text-stone-900 mb-4" data-i18n="forecast_title">Seasonal Forecast</h2>
+                <p class="text-stone-500 max-w-xl mx-auto" data-i18n="forecast_desc">Our AI analyzes regional growing patterns to help you plan menus around peak freshness and lowest cost.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl border border-stone-100 p-8 max-w-4xl mx-auto">
+                 <div class="flex justify-between items-center mb-6 pb-6 border-b border-stone-100">
+                    <h3 class="text-xl font-bold text-stone-800">Forecast for <span id="forecast-month" class="text-emerald-600"></span></h3>
+                    <button onclick="generateSeasonalityReport()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-emerald-700 flex items-center gap-2">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+                        <span data-i18n="btn_refresh_forecast">Refresh Forecast</span>
+                    </button>
+                 </div>
+                 
+                 <div id="seasonality-loading" class="hidden py-12 text-center">
+                     <div class="loading-spinner mx-auto mb-4 w-8 h-8"></div>
+                     <p class="text-stone-400">Analyzing growing regions...</p>
+                 </div>
+
+                 <div id="seasonality-content" class="prose prose-stone max-w-none">
+                     <p class="text-stone-500 italic">Click "Refresh Forecast" to generate a real-time report based on the current month.</p>
+                 </div>
+            </div>
+        </div>
+
+        <!-- FARMER ONBOARDING VIEW -->
+        <div id="view-farmer" class="hidden fade-in">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-4xl font-serif font-bold text-stone-900 mb-6" data-i18n="farmer_title">Grow with The Nurserie.</h2>
+                    <p class="text-lg text-stone-600 mb-8 leading-relaxed" data-i18n="farmer_desc">Join The Nurserie's wholesale network. We connect local farms directly with restaurants, schools, and bulk buyers. No distributor markups.</p>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3">
+                            <div class="bg-emerald-100 p-2 rounded-full text-emerald-600"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <span class="font-medium text-stone-700">Set your own wholesale prices</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="bg-emerald-100 p-2 rounded-full text-emerald-600"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <span class="font-medium text-stone-700">Direct access to institutional buyers</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="bg-emerald-100 p-2 rounded-full text-emerald-600"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <span class="font-medium text-stone-700">Next-day payouts</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-xl border border-stone-100">
+                    <h3 class="text-xl font-bold text-stone-800 mb-6">New Vendor Application</h3>
+                    <form onsubmit="handleFarmerSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Farm Name</label>
+                            <input type="text" id="farm-name" required class="w-full p-3 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Product Name to List</label>
+                            <input type="text" id="farm-product" placeholder="e.g. Heirloom Tomatoes" required class="w-full p-3 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                             <div>
+                                <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Case Price ($)</label>
+                                <input type="number" id="farm-price" step="0.01" required class="w-full p-3 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Unit</label>
+                                <input type="text" id="farm-unit" placeholder="e.g. 20lb Box" required class="w-full p-3 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Product Description</label>
+                            <textarea id="farm-desc" rows="3" class="w-full p-3 border border-stone-200 rounded-lg focus:border-emerald-500 outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold py-4 rounded-xl transition-all shadow-lg mt-4">
+                            Submit Listing
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLANNER VIEW -->
+        <div id="view-planner" class="hidden fade-in">
+            <div class="grid lg:grid-cols-12 gap-8">
+                
+                <!-- Left Sidebar: History -->
+                <div class="lg:col-span-3 space-y-6">
+                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 h-full">
+                        <h3 class="text-lg font-bold text-stone-900 mb-4 flex items-center gap-2">
+                            <svg class="h-5 w-5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            <span data-i18n="saved_plans">Saved Plans</span>
+                        </h3>
+                        <div id="saved-plans-list" class="space-y-2">
+                            <p class="text-sm text-stone-400 italic">No saved plans yet.</p>
+                        </div>
+                     </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="lg:col-span-9">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center p-4 bg-emerald-100 rounded-full mb-6 shadow-sm">
+                            <svg class="h-8 w-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                        </div>
+                        <h2 class="text-4xl font-serif font-bold text-stone-900 mb-4" data-i18n="planner_title">AI Procurement Assistant</h2>
+                        <p class="text-stone-500 max-w-2xl mx-auto leading-relaxed" data-i18n="planner_desc">Describe your need (e.g., "Vegetarian menu for 300 students under $500") and our AI will build a cart for you.</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-xl border border-stone-100 p-8 transition-all hover:shadow-2xl mb-12">
+                        <div class="mb-4">
+                            <label class="block text-xs font-bold text-stone-500 uppercase mb-1" data-i18n="plan_name_label">Project / Plan Name</label>
+                            <input type="text" id="plan-name" placeholder="e.g. Thanksgiving Charity Event" class="w-full p-3 border border-stone-200 rounded-xl focus:border-emerald-500 outline-none font-medium">
+                        </div>
+                        <textarea id="planner-input" rows="3" class="w-full p-4 border border-stone-200 rounded-xl mb-6 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 outline-none text-lg transition-all resize-none bg-stone-50 focus:bg-white" placeholder="Describe your requirements..."></textarea>
+                        <button onclick="handleAiPlan()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl transition-all transform active:scale-95 flex items-center justify-center gap-3 text-lg shadow-lg shadow-emerald-200">
+                            <span id="planner-btn-text" data-i18n="btn_generate_plan">Generate Optimized Order</span>
+                            <div id="planner-loader" class="loading-spinner hidden"></div>
+                        </button>
+                    </div>
+
+                    <div id="planner-results" class="hidden fade-in">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-2xl font-serif font-bold text-stone-900">Suggested Order</h3>
+                            <div class="flex gap-2">
+                                <button onclick="clearPlan()" class="text-sm text-stone-400 hover:text-stone-600 font-medium px-3 py-2">Clear</button>
+                                <button onclick="saveCurrentPlan()" class="flex items-center gap-2 bg-stone-800 hover:bg-stone-900 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                    Save Plan
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden mb-8">
+                            <div class="bg-stone-50 border-b border-stone-200 px-6 py-3 grid grid-cols-12 gap-4 text-xs font-bold text-stone-500 uppercase tracking-wider">
+                                <div class="col-span-2 text-center">Qty</div>
+                                <div class="col-span-6">Product</div>
+                                <div class="col-span-2">Cost</div>
+                                <div class="col-span-2 text-right">Action</div>
+                            </div>
+                            <div id="planner-items" class="divide-y divide-stone-100"></div>
+                        </div>
+                        
+                        <div class="text-center bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
+                             <p class="text-emerald-800 mb-4">Looks good? Add these items to your active cart to proceed with checkout.</p>
+                             <button onclick="addAllPlannerItems()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-md transition-transform hover:-translate-y-1">
+                                Add Selection to Cart
+                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CART VIEW -->
+        <div id="view-cart" class="hidden fade-in">
+            <h2 class="text-4xl font-serif font-bold mb-8 text-stone-900" data-i18n="cart_title">Procurement & Impact</h2>
+            
+            <div id="success-message" class="hidden text-center py-12 bg-emerald-50 rounded-3xl mb-12">
+                <div class="inline-flex p-4 bg-emerald-100 rounded-full text-emerald-600 mb-4">
+                    <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <h3 class="text-3xl font-serif font-bold text-emerald-900 mb-2">Order Confirmed!</h3>
+                <p class="text-emerald-700 mb-6">Your inventory has been updated.</p>
+                <button onclick="printManifest()" class="bg-white border border-emerald-200 text-emerald-800 px-6 py-2 rounded-lg font-bold hover:bg-emerald-100 transition-colors shadow-sm">
+                    Print Kitchen Manifest
+                </button>
+            </div>
+
+            <div id="cart-grid" class="grid lg:grid-cols-3 gap-8">
+                <!-- Cart Items List -->
+                <div class="lg:col-span-2">
+                    <div id="cart-items" class="space-y-4"></div>
+                    <div id="empty-cart-msg" class="hidden bg-white p-12 rounded-2xl shadow-sm border border-stone-100 text-center">
+                        <div class="inline-block p-4 rounded-full bg-stone-100 mb-4">
+                            <svg class="h-12 w-12 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        </div>
+                        <p class="text-xl text-stone-500 font-medium">Your procurement cart is empty.</p>
+                        <button onclick="switchView('shop')" class="mt-6 text-emerald-600 font-bold hover:text-emerald-700">Browse Catalog &rarr;</button>
+                    </div>
+                </div>
+                
+                <!-- Impact & Checkout Sidebar -->
+                <div class="lg:col-span-1 space-y-6">
+                    
+                    <!-- IMPACT DASHBOARD -->
+                    <div class="bg-blue-900 text-white p-6 rounded-2xl shadow-xl border border-blue-800 relative overflow-hidden">
+                        <!-- Decorative background -->
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-700 rounded-full opacity-20 blur-3xl"></div>
+                        
+                        <h3 class="text-lg font-bold mb-6 flex items-center gap-2 relative z-10">
+                            <svg class="h-5 w-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+                            <span data-i18n="impact_title">Harvest Impact Analytics</span>
+                        </h3>
+
+                        <div class="grid grid-cols-2 gap-4 mb-6 relative z-10">
+                            <div class="bg-white/10 p-3 rounded-xl backdrop-blur-sm">
+                                <p class="text-xs text-blue-200 uppercase font-bold" data-i18n="total_cals">Total Calories</p>
+                                <p id="impact-cals" class="text-2xl font-bold">0</p>
+                            </div>
+                             <div class="bg-white/10 p-3 rounded-xl backdrop-blur-sm">
+                                <p class="text-xs text-blue-200 uppercase font-bold" data-i18n="total_protein">Protein (g)</p>
+                                <p id="impact-protein" class="text-2xl font-bold text-emerald-300">0g</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 relative z-10">
+                             <div class="flex justify-between items-end mb-1">
+                                <p class="text-sm font-medium text-blue-100" data-i18n="est_meals">Est. Meals Provided</p>
+                                <p id="impact-meals" class="text-2xl font-bold text-white">0</p>
+                             </div>
+                             <div class="w-full bg-blue-950 rounded-full h-2 overflow-hidden">
+                                <div class="bg-emerald-500 h-2 rounded-full w-full animate-pulse"></div>
+                             </div>
+                             <p class="text-[10px] text-blue-300 mt-1 text-right">*Based on 650 calorie standard meal</p>
+                        </div>
+
+                        <div class="pt-4 border-t border-white/10 flex justify-between items-center relative z-10">
+                            <p class="text-sm text-blue-200" data-i18n="cost_per_meal">Cost Per Meal</p>
+                            <p id="impact-cpm" class="text-xl font-bold text-emerald-300">$0.00</p>
+                        </div>
+                    </div>
+
+                    <!-- CHECKOUT -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-stone-100">
+                        <h3 class="text-xl font-bold mb-6 text-stone-800" data-i18n="order_summary">Order Summary</h3>
+                        
+                        <div class="space-y-3 mb-6 text-stone-600">
+                            <div class="flex justify-between">
+                                <span data-i18n="subtotal">Subtotal</span>
+                                <span id="cart-subtotal" class="font-medium">$0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-emerald-600">
+                                <span data-i18n="savings">Wholesale Savings</span>
+                                <span class="font-bold" data-i18n="included">Included</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span data-i18n="pickup_fee">Pickup Fee</span>
+                                <span class="font-medium" data-i18n="free">Free</span>
+                            </div>
+                            <div class="h-px bg-stone-100 my-2"></div>
+                            <div class="flex justify-between text-xl font-bold text-stone-900">
+                                <span data-i18n="total">Total</span>
+                                <span id="cart-total">$0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h4 class="text-sm font-bold uppercase text-stone-400 mb-3 tracking-wider" data-i18n="pickup_details">Pickup Details</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs text-stone-500 font-semibold mb-1">Organization / Name</label>
+                                    <input type="text" id="pickup-name" placeholder="e.g. St. Mary's Food Bank" class="w-full p-2 text-sm border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-stone-500 font-semibold mb-1">Phone Number</label>
+                                    <input type="tel" id="pickup-phone" placeholder="(555) 555-5555" class="w-full p-2 text-sm border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-stone-500 font-semibold mb-1">Pickup Time Slot</label>
+                                    <select id="pickup-time" class="w-full p-2 text-sm border border-stone-200 rounded-lg focus:border-emerald-500 outline-none bg-white">
+                                        <option>Tomorrow 6:00 AM - 8:00 AM</option>
+                                        <option>Tomorrow 8:00 AM - 10:00 AM</option>
+                                        <option>Tomorrow 10:00 AM - 12:00 PM</option>
+                                        <option>Tomorrow 1:00 PM - 3:00 PM</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-stone-500 font-semibold mb-1">Vehicle / Loading Dock</label>
+                                    <input type="text" id="pickup-vehicle" placeholder="Dock 4 or License Plate" class="w-full p-2 text-sm border border-stone-200 rounded-lg focus:border-emerald-500 outline-none">
+                                </div>
+                                
+                                <!-- Subscription Toggle -->
+                                <div class="flex items-center justify-between border border-stone-100 p-3 rounded-lg bg-emerald-50/50">
+                                    <span class="text-xs font-bold text-emerald-700">Make this a Weekly Standing Order</span>
+                                    <div class="relative inline-block w-10 h-6 align-middle select-none transition duration-200 ease-in">
+                                        <input type="checkbox" name="recurring" id="recurring-order" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer border-stone-300 top-1 left-1 transition-all duration-300"/>
+                                        <label for="recurring-order" class="toggle-label block overflow-hidden h-6 rounded-full bg-stone-300 cursor-pointer"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="processCheckout()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                            <span data-i18n="btn_confirm">Confirm Pickup</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Print Area (Hidden normally) -->
+    <div id="print-area" class="hidden p-8 bg-white">
+        <div class="border-b pb-4 mb-4">
+            <h1 class="text-3xl font-bold mb-2">The Nurserie</h1>
+            <p>Wholesale Produce Division - Manifest</p>
+        </div>
+        <div id="print-content"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-400 py-6 mt-auto border-t border-stone-800 text-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <h4 class="text-white font-serif font-bold text-lg">The Nurserie</h4>
+                    <span class="bg-stone-800 px-2 py-0.5 rounded text-xs">Wholesale Division</span>
+                </div>
+                <div class="flex gap-6">
+                    <span data-i18n="footer_loc_title">Location</span>: Warehouse District, Bay 4
+                    <span class="hidden md:inline">|</span>
+                    <span data-i18n="footer_hours_title">Hours</span>: M-F 6AM-4PM
+                </div>
+                <div class="text-xs text-stone-600">
+                    &copy; 2024 The Nurserie. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { GoogleGenAI, Type } from "https://esm.run/@google/genai";
+
+        // ==========================================
+        // HOSTING CONFIGURATION
+        // For a public demo, paste your API key here:
+        const DEMO_API_KEY = ""; 
+        // ==========================================
+
+        // --- API KEY HANDLING ---
+        function getApiKey() {
+            // Priority 1: Hardcoded for demo
+            if(DEMO_API_KEY && DEMO_API_KEY.length > 5) return DEMO_API_KEY;
+            
+            // Priority 2: Process env (Development)
+            if(window.process && window.process.env && window.process.env.API_KEY) {
+                return window.process.env.API_KEY;
+            }
+            
+            // Priority 3: Local Storage (User inputted)
+            return localStorage.getItem('gemini_api_key_override');
+        }
+
+        // --- TRANSLATIONS ---
+        const TRANSLATIONS = {
+            en: {
+                subtitle: "Direct",
+                nav_catalog: "Catalog",
+                nav_planner: "AI Planner",
+                nav_inventory: "My Inventory",
+                nav_forecast: "Forecast",
+                nav_sell: "Sell With Us",
+                nav_home: "Home",
+                nav_login: "Login",
+                nav_profile: "Profile",
+                mobile_menu: "Menu",
+                hero_badge: "OPEN TO PUBLIC & INSTITUTIONS",
+                hero_title: "The Nurserie Wholesale.<br/>Direct to You.",
+                hero_subtitle: "Our premium wholesale division. Source farm-fresh produce for Restaurants, Schools, and Families directly from The Nurserie network.",
+                btn_start_order: "Start Order",
+                btn_forecast: "Seasonal Forecast",
+                feat_1_title: "Inventory & Shelf Life",
+                feat_1_desc: "Track 'Use By' dates automatically. We monitor shelf life so you reduce food waste and reorder just in time.",
+                feat_2_title: "Local Farmer Direct",
+                feat_2_desc: "We onboard local growers directly. Restaurants can source hyper-local ingredients with wholesale logistics.",
+                feat_3_title: "Impact Analytics",
+                feat_3_desc: "Instantly see 'Meals Provided' metrics and calories per dollar to maximize institutional budgets.",
+                shop_title: "Bulk Catalog",
+                shop_subtitle: "Inventory & Shelf Life data updated daily.",
+                inventory_title: "My Inventory",
+                inventory_subtitle: "Track shelf life and reorder before spoilage.",
+                btn_add_items: "+ Add Items",
+                forecast_title: "Seasonal Forecast",
+                forecast_desc: "Our AI analyzes regional growing patterns to help you plan menus around peak freshness and lowest cost.",
+                btn_refresh_forecast: "Refresh Forecast",
+                farmer_title: "Grow with The Nurserie.",
+                farmer_desc: "Join The Nurserie's wholesale network. We connect local farms directly with restaurants, schools, and bulk buyers. No distributor markups.",
+                saved_plans: "Saved Plans",
+                planner_title: "AI Procurement Assistant",
+                planner_desc: "Describe your need (e.g., 'Vegetarian menu for 300 students under $500') and our AI will build a cart for you.",
+                plan_name_label: "Project / Plan Name",
+                btn_generate_plan: "Generate Optimized Order",
+                cart_title: "Procurement & Impact",
+                impact_title: "Harvest Impact Analytics",
+                total_cals: "Total Calories",
+                total_protein: "Protein (g)",
+                est_meals: "Est. Meals Provided",
+                cost_per_meal: "Cost Per Meal",
+                order_summary: "Order Summary",
+                subtotal: "Subtotal",
+                savings: "Wholesale Savings",
+                included: "Included",
+                pickup_fee: "Pickup Fee",
+                free: "Free",
+                total: "Total",
+                pickup_details: "Pickup Details",
+                btn_confirm: "Confirm Pickup",
+                yield_label: "Kitchen Yield",
+                yield_usable: "Usable",
+                origin_storage: "Origin & Storage",
+                nutrients: "Nutrientes (Per Case)",
+                wholesale_price: "Wholesale Price",
+                add_to_order: "Add to Order",
+                footer_loc_title: "Location",
+                footer_hours_title: "Hours",
+                filter_all: "All Items",
+                filter_bundles: "Project Bundles",
+                filter_favorites: "Favorites",
+                filter_rescue: "Rescue Bin (40% Off)",
+                filter_veg: "Vegetables",
+                filter_fruit: "Fruits",
+                filter_root: "Roots & Tubers",
+                auth_login_title: "Welcome Back",
+                auth_register_title: "Create Profile",
+                btn_login: "Sign In",
+                btn_register: "Create Account",
+                btn_logout: "Log Out",
+                order_history: "Order History"
+            },
+            es: {
+                subtitle: "Directo",
+                nav_catalog: "Catálogo",
+                nav_planner: "Planificador IA",
+                nav_inventory: "Mi Inventario",
+                nav_forecast: "Pronóstico",
+                nav_sell: "Vende Con Nosotros",
+                nav_home: "Inicio",
+                nav_login: "Iniciar Sesión",
+                nav_profile: "Perfil",
+                mobile_menu: "Menú",
+                hero_badge: "ABIERTO AL PÚBLICO E INSTITUCIONES",
+                hero_title: "The Nurserie Mayorista.<br/>Directo a Usted.",
+                hero_subtitle: "Nuestra división mayorista. Productos frescos para restaurantes, escuelas y familias directamente de la red de The Nurserie.",
+                btn_start_order: "Comenzar Pedido",
+                btn_forecast: "Pronóstico Estacional",
+                feat_1_title: "Inventario y Vida Útil",
+                feat_1_desc: "Rastrea fechas de caducidad automáticamente. Monitoreamos la vida útil para reducir desperdicios.",
+                feat_2_title: "Directo del Agricultor",
+                feat_2_desc: "Conectamos con cultivadores locales. Los restaurantes pueden obtener ingredientes hiperlocales.",
+                feat_3_title: "Análisis de Impacto",
+                feat_3_desc: "Vea métricas de 'Comidas Provistas' y calorías por dólar para maximizar presupuestos.",
+                shop_title: "Catálogo Mayorista",
+                shop_subtitle: "Datos de inventario y vida útil actualizados diariamente.",
+                inventory_title: "Mi Inventario",
+                inventory_subtitle: "Rastrea la vida útil y reordena antes de que se estropee.",
+                btn_add_items: "+ Agregar Artículos",
+                forecast_title: "Pronóstico Estacional",
+                forecast_desc: "Nuestra IA analiza patrones de cultivo regionales para ayudarle a planificar menús.",
+                btn_refresh_forecast: "Actualizar Pronóstico",
+                farmer_title: "Crece con The Nurserie.",
+                farmer_desc: "Únete a la red mayorista de The Nurserie. Conectamos granjas locales directamente con compradores mayoristas.",
+                saved_plans: "Planes Guardados",
+                planner_title: "Asistente de Adquisiciones IA",
+                planner_desc: "Describa su necesidad (ej. 'Menú vegetariano para 300 estudiantes') y nuestra IA creará un carrito.",
+                plan_name_label: "Nombre del Proyecto",
+                btn_generate_plan: "Generar Pedido Optimizado",
+                cart_title: "Adquisiciones e Impacto",
+                impact_title: "Análisis de Impacto",
+                total_cals: "Calorías Totales",
+                total_protein: "Proteína (g)",
+                est_meals: "Comidas Estimadas",
+                cost_per_meal: "Costo por Comida",
+                order_summary: "Resumen del Pedido",
+                subtotal: "Subtotal",
+                savings: "Ahorro Mayorista",
+                included: "Incluido",
+                pickup_fee: "Tarifa de Recogida",
+                free: "Gratis",
+                total: "Total",
+                pickup_details: "Detalles de Recogida",
+                btn_confirm: "Confirmar Recogida",
+                yield_label: "Rendimiento Cocina",
+                yield_usable: "Utilizable",
+                origin_storage: "Origen y Almacenaje",
+                nutrients: "Nutrientes (Por Caja)",
+                wholesale_price: "Precio Mayorista",
+                add_to_order: "Agregar al Pedido",
+                footer_loc_title: "Ubicación",
+                footer_hours_title: "Horario",
+                filter_all: "Todos",
+                filter_bundles: "Paquetes",
+                filter_favorites: "Favoritos",
+                filter_rescue: "Rescate (40% Desc)",
+                filter_veg: "Verduras",
+                filter_fruit: "Frutas",
+                filter_root: "Raíces",
+                auth_login_title: "Bienvenido",
+                auth_register_title: "Crear Perfil",
+                btn_login: "Ingresar",
+                btn_register: "Crear Cuenta",
+                btn_logout: "Cerrar Sesión",
+                order_history: "Historial de Pedidos"
+            },
+            zh: {
+                subtitle: "直供",
+                nav_catalog: "目录",
+                nav_planner: "AI 规划师",
+                nav_inventory: "我的库存",
+                nav_forecast: "预测",
+                nav_sell: "与我们合作",
+                nav_home: "主页",
+                nav_login: "登录",
+                nav_profile: "个人资料",
+                mobile_menu: "菜单",
+                hero_badge: "面向公众和机构开放",
+                hero_title: "The Nurserie 批发部。<br/>直供。",
+                hero_subtitle: "我们的优质批发部门。直接从 The Nurserie 网络为餐厅、学校和家庭采购农场新鲜农产品。",
+                btn_start_order: "开始订购",
+                btn_forecast: "季节性预测",
+                feat_1_title: "库存与保质期",
+                feat_1_desc: "自动追踪“最佳食用”日期。我们监控保质期以减少食物浪费并及时补货。",
+                feat_2_title: "本地农民直供",
+                feat_2_desc: "我们直接与本地种植者联系。餐厅可以获得超本地化的批发食材。",
+                feat_3_title: "影响分析",
+                feat_3_desc: "即时查看“提供的餐食”指标和每美元卡路里，以最大化机构预算。",
+                shop_title: "批发目录",
+                shop_subtitle: "库存和保质期数据每日更新。",
+                inventory_title: "我的库存",
+                inventory_subtitle: "追踪保质期并在变质前重新订购。",
+                btn_add_items: "+ 添加商品",
+                forecast_title: "季节性预测",
+                forecast_desc: "我们的 AI 分析区域种植模式，帮助您围绕新鲜度和最低成本规划菜单。",
+                btn_refresh_forecast: "刷新预测",
+                farmer_title: "与 The Nurserie 共同成长",
+                farmer_desc: "加入 The Nurserie 批发网络。我们将本地农场直接与餐厅、学校和批量买家联系起来。无分销商加价。",
+                saved_plans: "保存的计划",
+                planner_title: "AI 采购助手",
+                planner_desc: "描述您的需求（例如，“300名学生的素食菜单，预算500美元以下”），我们的 AI 将为您建立购物车。",
+                plan_name_label: "项目/计划名称",
+                btn_generate_plan: "生成优化订单",
+                cart_title: "采购与影响",
+                impact_title: "收获影响分析",
+                total_cals: "总卡路里",
+                total_protein: "蛋白质 (克)",
+                est_meals: "预计提供的餐食",
+                cost_per_meal: "每餐成本",
+                order_summary: "订单摘要",
+                subtotal: "小计",
+                savings: "批发储蓄",
+                included: "已包含",
+                pickup_fee: "取货费",
+                free: "免费",
+                total: "总计",
+                pickup_details: "取货详情",
+                btn_confirm: "确认取货",
+                yield_label: "厨房产出率",
+                yield_usable: "可用",
+                origin_storage: "产地与储存",
+                nutrients: "营养成分（每箱）",
+                wholesale_price: "批发价格",
+                add_to_order: "添加到订单",
+                footer_loc_title: "位置",
+                footer_hours_title: "营业时间",
+                filter_all: "全部商品",
+                filter_bundles: "项目套餐",
+                filter_favorites: "收藏",
+                filter_rescue: "救援箱 (6折)",
+                filter_veg: "蔬菜",
+                filter_fruit: "水果",
+                filter_root: "根茎类",
+                auth_login_title: "欢迎回来",
+                auth_register_title: "创建个人资料",
+                btn_login: "登录",
+                btn_register: "创建账户",
+                btn_logout: "登出",
+                order_history: "订单历史"
+            },
+            hi: {
+                subtitle: "प्रत्यक्ष",
+                nav_catalog: "कैटलॉग",
+                nav_planner: "AI योजनाकार",
+                nav_inventory: "मेरी इन्वेंटरी",
+                nav_forecast: "पूर्वानुमान",
+                nav_sell: "हमारे साथ बेचें",
+                nav_home: "होम",
+                nav_login: "लॉग इन करें",
+                nav_profile: "प्रोफ़ाइल",
+                mobile_menu: "मेनू",
+                hero_badge: "सार्वजनिक और संस्थाओं के लिए खुला",
+                hero_title: "The Nurserie थोक।<br/>सीधे आप तक।",
+                hero_subtitle: "हमारा प्रीमियम थोक प्रभाग। रेस्तरां, स्कूलों और परिवारों के लिए सीधे The Nurserie नेटवर्क से ताजा उपज प्राप्त करें।",
+                btn_start_order: "ऑर्डर शुरू करें",
+                btn_forecast: "मौसमी पूर्वानुमान",
+                feat_1_title: "इन्वेंटरी और शेल्फ लाइफ",
+                feat_1_desc: "समाप्ति तिथियों को स्वचालित रूप से ट्रैक करें। हम शेल्फ लाइफ की निगरानी करते हैं ताकि आप भोजन की बर्बादी कम करें।",
+                feat_2_title: "सीधे स्थानीय किसान से",
+                feat_2_desc: "हम स्थानीय उत्पादकों को सीधे जोड़ते हैं। रेस्तरां थोक रसद के साथ अति-स्थानीय सामग्री प्राप्त कर सकते हैं।",
+                feat_3_title: "प्रभाव विश्लेषण",
+                feat_3_desc: "बजट को अधिकतम करने के लिए 'भोजन प्रदान किए गए' मेट्रिक्स और कैलोरी प्रति डॉलर तुरंत देखें।",
+                shop_title: "थोक कैटलॉग",
+                shop_subtitle: "इन्वेंटरी और शेल्फ लाइफ डेटा दैनिक अद्यतन किया जाता है।",
+                inventory_title: "मेरी इन्वेंटरी",
+                inventory_subtitle: "शेल्फ लाइफ को ट्रैक करें और खराब होने से पहले रीऑर्डर करें।",
+                btn_add_items: "+ आइटम जोड़ें",
+                forecast_title: "मौसमी पूर्वानुमान",
+                forecast_desc: "हमारा AI पीक फ्रेशनेस और सबसे कम लागत के आसपास मेनू की योजना बनाने में मदद करता है।",
+                btn_refresh_forecast: "पूर्वानुमान ताज़ा करें",
+                farmer_title: "The Nurserie के साथ बढ़ें।",
+                farmer_desc: "The Nurserie के थोक नेटवर्क में शामिल हों। हम स्थानीय खेतों को सीधे रेस्तरां और थोक खरीदारों से जोड़ते हैं।",
+                saved_plans: "सहेजी गई योजनाएं",
+                planner_title: "AI खरीद सहायक",
+                planner_desc: "अपनी आवश्यकता का वर्णन करें (जैसे, '$500 के तहत 300 छात्रों के लिए शाकाहारी मेनू') और हमारा AI आपके लिए कार्ट बनाएगा।",
+                plan_name_label: "प्रोजेक्ट / योजना का नाम",
+                btn_generate_plan: "अनुकूलित ऑर्डर जनरेट करें",
+                cart_title: "खरीद और प्रभाव",
+                impact_title: "हार्वेस्ट प्रभाव विश्लेषण",
+                total_cals: "कुल कैलोरी",
+                total_protein: "प्रोटीन (ग्राम)",
+                est_meals: "अनुमानित भोजन",
+                cost_per_meal: "प्रति भोजन लागत",
+                order_summary: "ऑर्डर सारांश",
+                subtotal: "उप-योग",
+                savings: "थोक बचत",
+                included: "शामिल",
+                pickup_fee: "पिकअप शुल्क",
+                free: "मुफ़्त",
+                total: "कुल",
+                pickup_details: "पिकअप विवरण",
+                btn_confirm: "पिकअप की पुष्टि करें",
+                yield_label: "किचन यील्ड",
+                yield_usable: "उपयोग योग्य",
+                origin_storage: "मूल और भंडारण",
+                nutrients: "पोषक तत्व (प्रति केस)",
+                wholesale_price: "थोक मूल्य",
+                add_to_order: "ऑर्डर में जोड़ें",
+                footer_loc_title: "स्थान",
+                footer_hours_title: "घंटे",
+                filter_all: "सभी आइटम",
+                filter_bundles: "बंडल",
+                filter_favorites: "पसंदीदा",
+                filter_rescue: "बचाव बिन (40% छूट)",
+                filter_veg: "सब्जियां",
+                filter_fruit: "फल",
+                filter_root: "जड़ें",
+                auth_login_title: "वापसी पर स्वागत है",
+                auth_register_title: "प्रोफ़ाइल बनाएं",
+                btn_login: "साइन इन करें",
+                btn_register: "खाता बनाएं",
+                btn_logout: "लॉग आउट",
+                order_history: "ऑर्डर इतिहास"
+            }
+        };
+
+        // --- DATA ---
+        let PRODUCTS = [
+            { 
+                id: 101, name: 'The Salsa Kit', price: 45.00, unit: 'Project Box', category: 'bundles', 
+                image: 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?auto=format&fit=crop&q=80', 
+                desc: 'Everything you need for house-made salsa: 25lb Roma Tomatoes, 5lb Onions, 2lb Jalapenos, 5 bunches Cilantro.', 
+                origin: 'Mixed Origins', storage: 'Various', calories: 25000, protein: 600, yield: 95, avgServing: 500, shelfLife: 7,
+                translations: {
+                    es: { name: 'Kit de Salsa', desc: 'Todo para salsa casera: 25lb Tomates Roma, 5lb Cebollas, 2lb Jalapeños, Cilantro.' },
+                    zh: { name: '莎莎酱套件', desc: '自制莎莎酱所需的一切：25磅罗马番茄，5磅洋葱，2磅墨西哥辣椒，5束香菜。' },
+                    hi: { name: 'सालसा किट', desc: 'घर का बना सालसा के लिए सब कुछ: 25lb रोमा टमाटर, 5lb प्याज, 2lb जलपीनो, धनिया।' }
+                }
+            },
+            { 
+                id: 1, name: 'Russet Potatoes', price: 18.50, unit: '50lb Case', category: 'roots', 
+                image: 'https://images.unsplash.com/photo-1518977676605-156f026891e0?auto=format&fit=crop&q=80', 
+                desc: 'Premium Idaho grown russet potatoes. High starch content.', 
+                origin: 'Idaho, USA', storage: 'Cool, dark place (45-50°F)', calories: 17500, protein: 450, yield: 85, avgServing: 150, shelfLife: 60,
+                translations: {
+                    es: { name: 'Papas Russet', desc: 'Papas Russet cultivadas en Idaho. Alto contenido de almidón.' },
+                    zh: { name: '褐土豆', desc: '爱达荷州种植的优质褐土豆。高淀粉含量。' },
+                    hi: { name: 'रसेदार आलू', desc: 'प्रीमियम इडाहो रसेदार आलू। उच्च स्टार्च सामग्री।' }
+                }
+            },
+            { 
+                id: 2, name: 'Yellow Onions', price: 14.25, unit: '50lb Sack', category: 'roots', 
+                image: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&q=80', 
+                desc: 'Jumbo sweet yellow onions. Cured for long shelf life.', 
+                origin: 'Oregon, USA', storage: 'Dry, ventilated area', calories: 9000, protein: 250, yield: 90, avgServing: 100, shelfLife: 45,
+                translations: {
+                    es: { name: 'Cebollas Amarillas', desc: 'Cebollas amarillas dulces gigantes. Curadas para larga duración.' },
+                    zh: { name: '黄洋葱', desc: '特大甜黄洋葱。经处理可长期保存。' },
+                    hi: { name: 'पीली प्याज', desc: 'जंबो मीठी पीली प्याज। लंबी शेल्फ लाइफ के लिए ठीक किया गया।' }
+                }
+            },
+            { 
+                id: 3, name: 'Carrots', price: 22.00, unit: '25lb Bag', category: 'roots', 
+                image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80', 
+                desc: 'Freshly harvested sweet orange carrots. Tops removed.', 
+                origin: 'California, USA', storage: 'Refrigerated', calories: 4600, protein: 100, yield: 88, avgServing: 85, shelfLife: 21,
+                translations: {
+                    es: { name: 'Zanahorias', desc: 'Zanahorias naranjas dulces recién cosechadas. Sin hojas.' },
+                    zh: { name: '胡萝卜', desc: '新鲜收获的甜橙胡萝卜。已去顶。' },
+                    hi: { name: 'गाजर', desc: 'ताजा कटाई की गई मीठी नारंगी गाजर। ऊपर का हिस्सा हटा दिया गया।' }
+                }
+            },
+            { 
+                id: 4, name: 'Roma Tomatoes', price: 28.00, unit: '25lb Box', category: 'vegetables', 
+                image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80', 
+                desc: 'Firm, plum tomatoes ideal for sauces and canning.', 
+                origin: 'Mexico', storage: 'Room temp until ripe', calories: 2000, protein: 100, yield: 98, avgServing: 120, shelfLife: 7,
+                translations: {
+                    es: { name: 'Tomates Roma', desc: 'Tomates firmes tipo ciruela, ideales para salsas.' },
+                    zh: { name: '罗马番茄', desc: '紧实的李子番茄，非常适合做酱料和罐头。' },
+                    hi: { name: 'रोमा टमाटर', desc: 'सख्त, बेर टमाटर सॉस और कैनिंग के लिए आदर्श।' }
+                }
+            },
+            { 
+                id: 5, name: 'Iceberg Lettuce', price: 24.50, unit: '24ct Case', category: 'vegetables', 
+                image: 'https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?auto=format&fit=crop&q=80', 
+                desc: 'Crisp, tight heads. Vacuum cooled to ensure freshness.', 
+                origin: 'Arizona, USA', storage: 'Refrigerated (34°F)', calories: 1800, protein: 120, yield: 75, avgServing: 80, shelfLife: 10,
+                translations: {
+                    es: { name: 'Lechuga Iceberg', desc: 'Cabezas crujientes y firmes. Enfriadas al vacío.' },
+                    zh: { name: '结球生菜', desc: '脆嫩紧实的菜头。真空冷却以确保新鲜。' },
+                    hi: { name: 'आइसबर्ग सलाद', desc: 'कुरकुरा, तंग सिर। ताजगी सुनिश्चित करने के लिए वैक्यूम ठंडा।' }
+                }
+            },
+            { 
+                id: 6, name: 'Green Bell Peppers', price: 32.00, unit: '1 1/9 Bushel', category: 'vegetables', 
+                image: 'https://images.unsplash.com/photo-1563565375-f3fdf5dd2434?auto=format&fit=crop&q=80', 
+                desc: 'Large, blocky green peppers. Thick walls.', 
+                origin: 'Florida, USA', storage: 'Refrigerated', calories: 2200, protein: 100, yield: 82, avgServing: 150, shelfLife: 14,
+                translations: {
+                    es: { name: 'Pimientos Verdes', desc: 'Pimientos verdes grandes y cuadrados. Paredes gruesas.' },
+                    zh: { name: '青椒', desc: '大块头青椒。肉质厚实。' },
+                    hi: { name: 'हरी शिमला मिर्च', desc: 'बड़ी, ब्लॉक वाली हरी मिर्च। मोटी दीवारें।' }
+                }
+            },
+            { 
+                id: 7, name: 'Strawberries', price: 28.00, unit: '8x1lb Flat', category: 'fruits', 
+                image: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&q=80', 
+                desc: 'Sweet, red ripe strawberries. Hand-picked.', 
+                origin: 'California, USA', storage: 'Refrigerated', calories: 1100, protein: 24, yield: 95, avgServing: 140, shelfLife: 5,
+                translations: {
+                    es: { name: 'Fresas', desc: 'Fresas dulces y rojas. Cosechadas a mano.' },
+                    zh: { name: '草莓', desc: '甜美红熟的草莓。手工采摘。' },
+                    hi: { name: 'स्ट्रॉबेरी', desc: 'मीठी, लाल पकी हुई स्ट्रॉबेरी। हाथ से चुनी हुई।' }
+                }
+            },
+            { 
+                id: 8, name: 'Bananas', price: 19.50, unit: '40lb Case', category: 'fruits', 
+                image: 'https://images.unsplash.com/photo-1603833665858-e61d17a86224?auto=format&fit=crop&q=80', 
+                desc: 'Premium Cavendish bananas. Shipped green.', 
+                origin: 'Ecuador', storage: 'Room temp (60-70°F)', calories: 16000, protein: 200, yield: 65, avgServing: 110, shelfLife: 7,
+                translations: {
+                    es: { name: 'Plátanos', desc: 'Plátanos Cavendish premium. Enviados verdes.' },
+                    zh: { name: '香蕉', desc: '优质卡文迪什香蕉。生绿发货。' },
+                    hi: { name: 'केले', desc: 'प्रीमियम कैवendish केले। हरे भेजे गए।' }
+                }
+            },
+            { 
+                id: 9, name: 'Lemons', price: 34.00, unit: '165ct Case', category: 'fruits', 
+                image: 'https://images.unsplash.com/photo-1590502593747-42a996133562?auto=format&fit=crop&q=80', 
+                desc: 'Zesty, juicy Eureka lemons. Standard size 165s.', 
+                origin: 'California, USA', storage: 'Refrigerated', calories: 2800, protein: 80, yield: 45, avgServing: 200, shelfLife: 30,
+                translations: {
+                    es: { name: 'Limones', desc: 'Limones Eureka jugosos. Tamaño estándar 165.' },
+                    zh: { name: '柠檬', desc: '多汁的尤里卡柠檬。标准165规格。' },
+                    hi: { name: 'नींबू', desc: 'रसीले यूरेका नींबू। मानक आकार 165s।' }
+                }
+            },
+            { 
+                id: 10, name: 'Avocados', price: 42.00, unit: '48ct Case', category: 'fruits', 
+                image: 'https://images.unsplash.com/photo-1523049673856-3eb869ad2f53?auto=format&fit=crop&q=80', 
+                desc: 'Creamy Hass avocados. High oil content.', 
+                origin: 'Mexico', storage: 'Room temp until ripe', calories: 12000, protein: 150, yield: 60, avgServing: 96, shelfLife: 7,
+                translations: {
+                    es: { name: 'Aguacates', desc: 'Aguacates Hass cremosos. Alto contenido de aceite.' },
+                    zh: { name: '牛油果', desc: '奶油哈斯牛油果。高含油量。' },
+                    hi: { name: 'एवोकाडो', desc: 'मलाईदार हास एवोकाडो। उच्च तेल सामग्री।' }
+                }
+            },
+            { 
+                id: 11, name: 'Apples (Gala)', price: 38.00, unit: '40lb Box', category: 'fruits', 
+                image: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af?auto=format&fit=crop&q=80', 
+                desc: 'Sweet, crisp Gala apples. Wash size 100s.', 
+                origin: 'Washington, USA', storage: 'Refrigerated', calories: 9500, protein: 50, yield: 85, avgServing: 120, shelfLife: 90,
+                translations: {
+                    es: { name: 'Manzanas Gala', desc: 'Manzanas Gala dulces y crujientes. Tamaño 100.' },
+                    zh: { name: '嘎啦苹果', desc: '甜脆嘎啦苹果。100规格。' },
+                    hi: { name: 'सेब (गाला)', desc: 'मीठे, कुरकुरे गाला सेब। आकार 100s।' }
+                }
+            },
+            { 
+                id: 12, name: 'Broccoli Crowns', price: 26.50, unit: '20lb Box', category: 'vegetables', 
+                image: 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?auto=format&fit=crop&q=80', 
+                desc: 'Tight, dark green crowns. Minimal stalk.', 
+                origin: 'California, USA', storage: 'Refrigerated (ice recommended)', calories: 3000, protein: 250, yield: 90, avgServing: 100, shelfLife: 10,
+                translations: {
+                    es: { name: 'Coronas de Brócoli', desc: 'Coronas verde oscuro apretadas. Tallo mínimo.' },
+                    zh: { name: '西兰花冠', desc: '紧实的深绿色花冠。极少茎部。' },
+                    hi: { name: 'ब्रोकोली क्राउन', desc: 'तंग, गहरे हरे रंग के मुकुट। न्यूनतम डंठल।' }
+                }
+            }
+        ];
+
+        // --- STATE ---
+        let cart = JSON.parse(localStorage.getItem('harvest_cart') || '[]');
+        let favorites = JSON.parse(localStorage.getItem('harvest_favorites') || '[]');
+        let savedPlans = JSON.parse(localStorage.getItem('harvest_plans') || '[]');
+        let inventory = JSON.parse(localStorage.getItem('harvest_inventory') || '[]');
+        let localProducts = JSON.parse(localStorage.getItem('harvest_local_products') || '[]');
+        let users = JSON.parse(localStorage.getItem('harvest_users') || '[]');
+        let currentUser = JSON.parse(localStorage.getItem('harvest_current_user') || 'null');
+        let rescueProducts = []; 
+        let currentLang = 'en';
+        
+        // Merge Local Products into global list for display
+        PRODUCTS = [...PRODUCTS, ...localProducts];
+
+        let currentFilter = 'all';
+        let currentModalProduct = null;
+        let plannerItems = [];
+
+        // --- UI HELPERS ---
+        const el = (id) => document.getElementById(id);
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+        }
+
+        function showToast(message) {
+            const container = el('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-stone-900 text-white px-6 py-3 rounded-xl shadow-xl flex items-center gap-3 toast-enter';
+            toast.innerHTML = `
+                <svg class="h-5 w-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span class="font-medium text-sm">${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function getLocalizedProduct(product) {
+            if (!product.translations || !product.translations[currentLang]) {
+                return { name: product.name, desc: product.desc };
+            }
+            return product.translations[currentLang];
+        }
+
+        // --- AUTH LOGIC ---
+        window.handleAuthClick = function() {
+            if (currentUser) {
+                switchView('profile');
+            } else {
+                el('auth-modal').classList.remove('hidden');
+                el('auth-modal').classList.add('flex');
+            }
+        };
+
+        window.closeAuthModal = function() {
+            el('auth-modal').classList.add('hidden');
+            el('auth-modal').classList.remove('flex');
+        };
+
+        window.switchAuthTab = function(tab) {
+            if (tab === 'login') {
+                el('form-login').classList.remove('hidden');
+                el('form-register').classList.add('hidden');
+                el('tab-login').classList.add('border-emerald-600', 'bg-emerald-50', 'text-emerald-600');
+                el('tab-login').classList.remove('text-stone-400');
+                el('tab-register').classList.remove('border-emerald-600', 'bg-emerald-50', 'text-emerald-600');
+                el('tab-register').classList.add('text-stone-400');
+            } else {
+                el('form-login').classList.add('hidden');
+                el('form-register').classList.remove('hidden');
+                el('tab-register').classList.add('border-emerald-600', 'bg-emerald-50', 'text-emerald-600');
+                el('tab-register').classList.remove('text-stone-400');
+                el('tab-login').classList.remove('border-emerald-600', 'bg-emerald-50', 'text-emerald-600');
+                el('tab-login').classList.add('text-stone-400');
+            }
+        };
+
+        window.handleRegister = function() {
+            const name = el('reg-name').value;
+            const email = el('reg-email').value;
+            const pass = el('reg-pass').value;
+            const org = el('reg-org').value;
+            const phone = el('reg-phone').value;
+
+            if (!name || !email || !pass) {
+                alert("Please fill in required fields");
+                return;
+            }
+            
+            if (users.find(u => u.email === email)) {
+                alert("Email already registered");
+                return;
+            }
+
+            const newUser = {
+                id: Date.now(),
+                name, email, pass, org, phone,
+                orders: []
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('harvest_users', JSON.stringify(users));
+            
+            // Auto login
+            currentUser = newUser;
+            localStorage.setItem('harvest_current_user', JSON.stringify(currentUser));
+            
+            updateAuthUI();
+            closeAuthModal();
+            showToast("Profile Created Successfully!");
+            
+            if (!el('view-cart').classList.contains('hidden')) {
+                autoFillCheckout();
+            }
+        };
+
+        window.handleLogin = function() {
+            const email = el('login-email').value;
+            const pass = el('login-pass').value;
+
+            const user = users.find(u => u.email === email && u.pass === pass);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('harvest_current_user', JSON.stringify(currentUser));
+                updateAuthUI();
+                closeAuthModal();
+                showToast("Welcome back, " + user.name.split(' ')[0]);
+                if (!el('view-cart').classList.contains('hidden')) {
+                    autoFillCheckout();
+                }
+            } else {
+                alert("Invalid credentials");
+            }
+        };
+
+        window.handleLogout = function() {
+            currentUser = null;
+            localStorage.removeItem('harvest_current_user');
+            updateAuthUI();
+            switchView('home');
+            showToast("Logged out successfully");
+        };
+
+        function updateAuthUI() {
+            if (currentUser) {
+                el('auth-text').innerText = currentUser.name.split(' ')[0];
+                el('profile-name').innerText = currentUser.name;
+                el('profile-email').innerText = currentUser.email;
+                el('profile-org').innerText = currentUser.org || 'Individual Account';
+                el('profile-avatar').innerText = currentUser.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+                renderOrderHistory();
+            } else {
+                el('auth-text').setAttribute('data-i18n', 'nav_login');
+                el('auth-text').innerText = TRANSLATIONS[currentLang]['nav_login'];
+            }
+        }
+
+        function renderOrderHistory() {
+            const list = el('order-history-list');
+            list.innerHTML = '';
+            
+            if (!currentUser.orders || currentUser.orders.length === 0) {
+                el('no-history').classList.remove('hidden');
+                return;
+            }
+            
+            el('no-history').classList.add('hidden');
+            
+            currentUser.orders.slice().reverse().forEach(order => {
+                const date = new Date(order.date).toLocaleDateString();
+                const itemsSummary = order.items.map(i => `${i.quantity}x ${i.name}`).join(', ');
+                
+                const row = document.createElement('div');
+                row.className = 'px-6 py-4 grid grid-cols-12 gap-4 hover:bg-stone-50 transition-colors';
+                row.innerHTML = `
+                    <div class="col-span-3 text-sm font-bold text-stone-800">${date}</div>
+                    <div class="col-span-6 text-sm text-stone-600 truncate">${itemsSummary}</div>
+                    <div class="col-span-3 text-right text-sm font-bold text-emerald-600">${formatCurrency(order.total)}</div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        // --- NAVIGATION ---
+        window.switchView = function(viewId) {
+            const views = ['home', 'shop', 'cart', 'planner', 'inventory', 'seasonality', 'farmer', 'profile'];
+            views.forEach(id => {
+                el('view-' + id).classList.add('hidden');
+            });
+            el('view-' + viewId).classList.remove('hidden');
+            
+            // If switching to shop, ensure products rendered
+            if (viewId === 'shop') {
+                renderFilters();
+                renderFilteredProducts();
+            }
+            
+            // If switching to inventory, render it
+            if (viewId === 'inventory') renderInventory();
+
+            // If switching to cart, render cart
+            if (viewId === 'cart') {
+                renderCart();
+                if(currentUser) autoFillCheckout();
+            }
+
+            // If switching to profile, check auth
+            if (viewId === 'profile' && !currentUser) {
+                handleAuthClick();
+            }
+            
+            window.scrollTo(0,0);
+        };
+
+        window.toggleMobileMenu = function() {
+            const menu = el('mobile-menu');
+            menu.classList.toggle('hidden');
+        };
+
+        // --- SHOP LOGIC ---
+        function renderFilters() {
+            const categories = [
+                { id: 'all', label: 'filter_all' },
+                { id: 'bundles', label: 'filter_bundles' },
+                { id: 'favorites', label: 'filter_favorites' },
+                { id: 'rescue', label: 'filter_rescue' },
+                { id: 'vegetables', label: 'filter_veg' },
+                { id: 'fruits', label: 'filter_fruit' },
+                { id: 'roots', label: 'filter_root' }
+            ];
+
+            const container = el('category-filters');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="setFilter('${cat.id}')" 
+                    class="whitespace-nowrap px-5 py-2 rounded-full text-sm font-bold transition-all ${currentFilter === cat.id ? 'bg-emerald-600 text-white shadow-md' : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'}">
+                    ${TRANSLATIONS[currentLang][cat.label] || cat.label}
+                </button>
+            `).join('');
+        }
+
+        window.setFilter = function(filter) {
+            currentFilter = filter;
+            renderFilters();
+            renderFilteredProducts();
+        };
+
+        // Generate Imperfect Produce
+        function generateRescueProducts() {
+             rescueProducts = PRODUCTS.map(p => ({
+                 ...p,
+                 id: p.id + 9000,
+                 name: `Imperfect ${p.name}`,
+                 price: p.price * 0.6,
+                 category: 'rescue',
+                 image: p.image, // In a real app, would be a different image
+                 desc: `Visually imperfect, functionally perfect. Save 40% on these ${p.name}. Ideal for chopping, sauces, and soups.`,
+                 isRescue: true
+             }));
+        }
+        generateRescueProducts();
+
+        window.renderFilteredProducts = function() {
+            const search = el('shop-search').value.toLowerCase();
+            const grid = el('product-grid');
+            grid.innerHTML = '';
+
+            let productsToRender = currentFilter === 'rescue' ? rescueProducts : PRODUCTS;
+
+            const filtered = productsToRender.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(search);
+                
+                if (currentFilter === 'all') return matchesSearch;
+                if (currentFilter === 'favorites') return favorites.includes(p.id) && matchesSearch;
+                if (currentFilter === 'rescue') return matchesSearch; // Already switched array
+                
+                return p.category === currentFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                el('no-results').classList.remove('hidden');
+            } else {
+                el('no-results').classList.add('hidden');
+                filtered.forEach(product => {
+                    const isFav = favorites.includes(product.id);
+                    // Localization
+                    const localData = getLocalizedProduct(product);
+
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col h-full';
+                    card.innerHTML = `
+                        <div class="relative h-48 overflow-hidden cursor-pointer" onclick="openProductModal(${product.id}, ${product.isRescue})">
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            ${product.isRescue ? '<span class="absolute top-3 left-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wider shadow-lg">Rescue Bin</span>' : ''}
+                             ${product.id > 100 && product.id < 200 ? '<span class="absolute top-3 left-3 bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wider shadow-lg">Project Bundle</span>' : ''}
+                             ${product.id > 500 ? '<span class="absolute top-3 right-3 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wider shadow-lg">Local Farm</span>' : ''}
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-serif font-bold text-xl text-stone-800 leading-tight cursor-pointer hover:text-emerald-700 transition-colors" onclick="openProductModal(${product.id}, ${product.isRescue})">${localData.name}</h3>
+                                <button onclick="toggleFavorite(${product.id})" class="${isFav ? 'text-red-500 fill-current' : 'text-stone-300 hover:text-red-400'} transition-colors">
+                                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                </button>
+                            </div>
+                            <p class="text-stone-500 text-sm mb-4 line-clamp-2 flex-grow">${localData.desc}</p>
+                            
+                            <div class="flex items-center justify-between mt-auto pt-4 border-t border-stone-50">
+                                <div>
+                                    <span class="block text-xs text-stone-400 font-bold uppercase">${product.unit}</span>
+                                    <span class="text-lg font-bold text-emerald-700">${formatCurrency(product.price)}</span>
+                                </div>
+                                <button onclick="addToCart(${product.id}, 1, ${product.isRescue})" class="bg-stone-900 hover:bg-emerald-600 text-white p-3 rounded-xl transition-colors shadow-lg">
+                                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+        };
+
+        window.toggleFavorite = function(id) {
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(f => f !== id);
+                showToast("Removed from Favorites");
+            } else {
+                favorites.push(id);
+                showToast("Added to Favorites");
+            }
+            localStorage.setItem('harvest_favorites', JSON.stringify(favorites));
+            renderFilteredProducts();
+        };
+
+        // --- PRODUCT MODAL ---
+        window.openProductModal = function(id, isRescue = false) {
+            const productList = isRescue ? rescueProducts : PRODUCTS;
+            const product = productList.find(p => p.id === id);
+            if(!product) return;
+
+            currentModalProduct = product;
+            const localData = getLocalizedProduct(product);
+
+            el('modal-img').src = product.image;
+            el('modal-category').innerText = product.category;
+            el('modal-title').innerText = localData.name;
+            el('modal-desc').innerText = localData.desc;
+            el('modal-origin').innerText = product.origin;
+            el('modal-shelf').innerText = `Shelf Life: ~${product.shelfLife} Days`;
+            el('modal-price').innerText = formatCurrency(product.price);
+            el('modal-unit').innerText = `/ ${product.unit}`;
+            el('modal-qty-input').value = 1;
+
+            // Chef Stats
+            el('modal-yield').innerText = product.yield || 100;
+            el('modal-cals').innerText = (product.calories || 0).toLocaleString();
+            el('modal-protein').innerText = product.protein || 0;
+
+            el('modal-add-btn').onclick = () => {
+                const qty = parseInt(el('modal-qty-input').value);
+                addToCart(product.id, qty, isRescue);
+                closeProductModal();
+            };
+
+            el('product-modal').classList.remove('hidden');
+            el('product-modal').classList.add('flex');
+        };
+
+        window.closeProductModal = function() {
+            el('product-modal').classList.add('hidden');
+            el('product-modal').classList.remove('flex');
+            currentModalProduct = null;
+        };
+
+        window.updateModalQty = function(change) {
+            const input = el('modal-qty-input');
+            let val = parseInt(input.value) + change;
+            if (val < 1) val = 1;
+            input.value = val;
+        };
+
+        // --- CART LOGIC ---
+        window.addToCart = function(id, qty, isRescue = false) {
+            const productList = isRescue ? rescueProducts : PRODUCTS;
+            const product = productList.find(p => p.id === id);
+            if (!product) return;
+
+            const existing = cart.find(item => item.id === id && item.isRescue === isRescue);
+            if (existing) {
+                existing.quantity += qty;
+            } else {
+                cart.push({ ...product, quantity: qty, isRescue });
+            }
+            
+            updateCartState();
+            showToast(`Added ${qty}x ${getLocalizedProduct(product).name}`);
+        };
+
+        function updateCartState() {
+            localStorage.setItem('harvest_cart', JSON.stringify(cart));
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = el('cart-badge');
+            
+            if (count > 0) {
+                badge.innerText = count;
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+        
+        // Init Cart Badge
+        updateCartState();
+
+        function renderCart() {
+            const container = el('cart-items');
+            container.innerHTML = '';
+            
+            if (cart.length === 0) {
+                el('empty-cart-msg').classList.remove('hidden');
+                el('success-message').classList.add('hidden');
+                el('cart-subtotal').innerText = "$0.00";
+                el('cart-total').innerText = "$0.00";
+                updateImpactDashboard();
+                return;
+            }
+
+            el('empty-cart-msg').classList.add('hidden');
+            el('success-message').classList.add('hidden');
+
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                const localData = getLocalizedProduct(item);
+
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-stone-100';
+                row.innerHTML = `
+                    <img src="${item.image}" class="w-16 h-16 rounded-lg object-cover">
+                    <div class="flex-grow">
+                        <h4 class="font-bold text-stone-800">${localData.name}</h4>
+                        <p class="text-xs text-stone-500">${item.unit}</p>
+                    </div>
+                    <div class="flex items-center border border-stone-200 rounded-lg h-8">
+                        <button onclick="updateCartQty(${index}, -1)" class="px-2 text-stone-500 hover:bg-stone-50">-</button>
+                        <span class="px-2 text-sm font-bold">${item.quantity}</span>
+                        <button onclick="updateCartQty(${index}, 1)" class="px-2 text-stone-500 hover:bg-stone-50">+</button>
+                    </div>
+                    <div class="text-right min-w-[80px]">
+                        <p class="font-bold text-stone-800">${formatCurrency(itemTotal)}</p>
+                        <button onclick="removeFromCart(${index})" class="text-[10px] text-red-400 hover:text-red-600 font-medium">Remove</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            el('cart-subtotal').innerText = formatCurrency(subtotal);
+            el('cart-total').innerText = formatCurrency(subtotal);
+            
+            updateImpactDashboard();
+        }
+
+        window.updateCartQty = function(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity < 1) cart[index].quantity = 1;
+            updateCartState();
+            renderCart();
+        };
+
+        window.removeFromCart = function(index) {
+            cart.splice(index, 1);
+            updateCartState();
+            renderCart();
+        };
+
+        function updateImpactDashboard() {
+            let totalCals = 0;
+            let totalProtein = 0;
+            let totalPrice = 0;
+
+            cart.forEach(item => {
+                totalCals += (item.calories || 0) * item.quantity;
+                totalProtein += (item.protein || 0) * item.quantity;
+                totalPrice += item.price * item.quantity;
+            });
+
+            const meals = Math.floor(totalCals / 650); // Standard meal cals
+            const cpm = meals > 0 ? (totalPrice / meals) : 0;
+
+            el('impact-cals').innerText = (totalCals).toLocaleString();
+            el('impact-protein').innerText = (totalProtein).toLocaleString() + 'g';
+            el('impact-meals').innerText = meals.toLocaleString();
+            el('impact-cpm').innerText = formatCurrency(cpm);
+        }
+
+        window.autoFillCheckout = function() {
+            if (currentUser) {
+                el('pickup-name').value = currentUser.org || currentUser.name;
+                el('pickup-phone').value = currentUser.phone;
+            }
+        };
+
+        window.processCheckout = function() {
+            if (!currentUser) {
+                showToast("Please login to complete order");
+                handleAuthClick();
+                return;
+            }
+
+            if (cart.length === 0) return;
+            
+            const pickupName = el('pickup-name').value;
+            if (!pickupName) {
+                alert("Please enter pickup name");
+                return;
+            }
+
+            const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+            // Add items to inventory
+            const today = new Date();
+            cart.forEach(item => {
+                inventory.push({
+                    ...item,
+                    purchaseDate: today.toISOString(),
+                    id: Date.now() + Math.random() // unique inventory id
+                });
+            });
+            localStorage.setItem('harvest_inventory', JSON.stringify(inventory));
+
+            // Save to User History
+            const orderRecord = {
+                id: Date.now(),
+                date: today.toISOString(),
+                total: total,
+                items: [...cart]
+            };
+            
+            // Find user index in users array and update
+            const userIndex = users.findIndex(u => u.email === currentUser.email);
+            if (userIndex !== -1) {
+                users[userIndex].orders = users[userIndex].orders || [];
+                users[userIndex].orders.push(orderRecord);
+                localStorage.setItem('harvest_users', JSON.stringify(users));
+                
+                // Update current session user
+                currentUser = users[userIndex];
+                localStorage.setItem('harvest_current_user', JSON.stringify(currentUser));
+            }
+
+            // Check for subscription
+            const isRecurring = el('recurring-order').checked;
+            if(isRecurring) {
+                showToast("Weekly subscription created!");
+                // Logic to save sub would go here
+            }
+
+            el('cart-items').innerHTML = '';
+            el('success-message').classList.remove('hidden');
+            el('success-message').classList.add('block'); // Ensure display
+            el('empty-cart-msg').classList.add('hidden'); // Ensure hidden
+            
+            cart = [];
+            updateCartState();
+            window.scrollTo(0,0);
+        };
+        
+        window.printManifest = function() {
+             const content = el('print-content');
+             const order = currentUser.orders[currentUser.orders.length - 1]; // Get last order
+             if(!order) return;
+             
+             content.innerHTML = `
+                <div class="mb-6">
+                    <p><strong>Customer:</strong> ${currentUser.org || currentUser.name}</p>
+                    <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>Order ID:</strong> #${order.id}</p>
+                </div>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-black">
+                            <th class="py-2">Qty</th>
+                            <th class="py-2">Item</th>
+                            <th class="py-2">Unit</th>
+                            <th class="py-2 text-right">Check</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${order.items.map(item => `
+                        <tr class="border-b border-gray-200">
+                            <td class="py-4 text-xl font-bold">${item.quantity}</td>
+                            <td class="py-4">${item.name}</td>
+                            <td class="py-4 text-sm">${item.unit}</td>
+                            <td class="py-4 text-right"><div class="w-6 h-6 border border-black inline-block"></div></td>
+                        </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+             `;
+             
+             window.print();
+        };
+
+        // --- INVENTORY LOGIC ---
+        window.renderInventory = function() {
+            const list = el('inventory-list');
+            list.innerHTML = '';
+            
+            if (inventory.length === 0) {
+                el('empty-inventory-msg').classList.remove('hidden');
+                return;
+            }
+            el('empty-inventory-msg').classList.add('hidden');
+
+            const today = new Date();
+
+            inventory.forEach((item, idx) => {
+                const purchased = new Date(item.purchaseDate);
+                const ageDays = Math.floor((today - purchased) / (1000 * 60 * 60 * 24));
+                const life = item.shelfLife || 14;
+                const remaining = life - ageDays;
+                const percent = Math.max(0, Math.min(100, (remaining / life) * 100));
+                
+                let statusColor = 'bg-emerald-500';
+                if (percent < 50) statusColor = 'bg-yellow-500';
+                if (percent < 20) statusColor = 'bg-red-500';
+
+                const row = document.createElement('div');
+                row.className = 'px-6 py-4 grid grid-cols-12 gap-4 items-center hover:bg-stone-50 transition-colors';
+                row.innerHTML = `
+                    <div class="col-span-5 md:col-span-4">
+                        <p class="font-bold text-stone-800 text-sm md:text-base">${item.name}</p>
+                        <p class="text-xs text-stone-500">${item.quantity} units</p>
+                    </div>
+                    <div class="col-span-3 md:col-span-2 text-center text-xs text-stone-500">
+                        ${purchased.toLocaleDateString()}
+                    </div>
+                    <div class="col-span-4 md:col-span-4 text-center">
+                         <div class="w-full bg-stone-200 rounded-full h-2 mb-1">
+                            <div class="${statusColor} h-2 rounded-full" style="width: ${percent}%"></div>
+                        </div>
+                        <p class="text-[10px] font-bold text-stone-400">${remaining} days left</p>
+                    </div>
+                    <div class="col-span-12 md:col-span-2 text-right md:text-center mt-2 md:mt-0">
+                        <button onclick="addToCart(${item.id > 9000 ? item.id - 9000 : item.id}, ${item.quantity}, false)" class="text-xs font-bold text-emerald-600 border border-emerald-200 px-3 py-1 rounded-full hover:bg-emerald-50">
+                            Reorder
+                        </button>
+                         <button onclick="removeInventory(${idx})" class="ml-2 text-xs text-red-400 hover:text-red-600">X</button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        };
+
+        window.removeInventory = function(index) {
+             inventory.splice(index, 1);
+             localStorage.setItem('harvest_inventory', JSON.stringify(inventory));
+             renderInventory();
+        };
+
+        // --- FARMER LOGIC ---
+        window.handleFarmerSubmit = function(e) {
+            e.preventDefault();
+            const name = el('farm-name').value;
+            const product = el('farm-product').value;
+            const price = parseFloat(el('farm-price').value);
+            const unit = el('farm-unit').value;
+            const desc = el('farm-desc').value;
+
+            const newProduct = {
+                id: Date.now(), // Simple ID generation
+                name: product,
+                price: price,
+                unit: unit,
+                category: 'vegetables', // Defaulting
+                image: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&q=80', // Default Farm Image
+                desc: `${desc} (Grown by ${name})`,
+                origin: `Local: ${name}`,
+                shelfLife: 7,
+                yield: 100,
+                isLocal: true
+            };
+
+            localProducts.push(newProduct);
+            localStorage.setItem('harvest_local_products', JSON.stringify(localProducts));
+            
+            // Update runtime list
+            PRODUCTS.push(newProduct);
+
+            alert("Listing Submitted! Your product is now live in the catalog.");
+            e.target.reset();
+            switchView('shop');
+        };
+
+        // --- AI PLANNER LOGIC ---
+        window.renderSavedPlans = function() {
+            const list = el('saved-plans-list');
+            list.innerHTML = '';
+            if(savedPlans.length === 0) {
+                list.innerHTML = '<p class="text-sm text-stone-400 italic">No saved plans yet.</p>';
+                return;
+            }
+            savedPlans.forEach((plan, idx) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center p-3 bg-stone-50 rounded-lg border border-stone-100 hover:bg-white hover:shadow-sm cursor-pointer transition-all';
+                div.onclick = () => loadPlan(idx);
+                div.innerHTML = `
+                    <span class="font-bold text-sm text-stone-700 truncate w-32">${plan.name}</span>
+                    <button onclick="event.stopPropagation(); deletePlan(${idx})" class="text-xs text-stone-400 hover:text-red-500">✕</button>
+                `;
+                list.appendChild(div);
+            });
+        };
+        renderSavedPlans(); // Init
+
+        window.handleAiPlan = async function() {
+            // --- API KEY CHECK ---
+            const apiKey = getApiKey();
+            if (!apiKey) {
+                const userKey = prompt("Demo Mode: Please enter a Google Gemini API Key to use AI features:");
+                if(userKey) {
+                    localStorage.setItem('gemini_api_key_override', userKey);
+                    // Reload to pick up key? Or just continue
+                } else {
+                     return;
+                }
+            }
+            
+            const prompt = el('planner-input').value;
+            if (!prompt) return alert("Please describe your needs first.");
+
+            const btnText = el('planner-btn-text');
+            const loader = el('planner-loader');
+
+            btnText.classList.add('hidden');
+            loader.classList.remove('hidden');
+
+            try {
+                // Use the getter for key
+                const ai = new GoogleGenAI({ apiKey: getApiKey() });
+                const productContext = PRODUCTS.map(p => `${p.id}: ${p.name} ($${p.price}/${p.unit})`).join('\n');
+                
+                const response = await ai.models.generateContent({
+                    model: 'gemini-2.5-flash',
+                    contents: `You are a procurement expert for a wholesale produce app called The Nurserie Wholesale.
+                    The user wants: "${prompt}".
+                    
+                    Available Products Catalog:
+                    ${productContext}
+                    
+                    Return a JSON object with a list of items to buy to fulfill this request efficiently.
+                    Format: { "items": [ { "id": 1, "qty": 5, "reason": "For the soup base" } ] }
+                    ONLY return JSON. No markdown.`,
+                     config: { responseMimeType: "application/json" }
+                });
+
+                const result = JSON.parse(response.text);
+                plannerItems = [];
+                
+                result.items.forEach(rec => {
+                    const product = PRODUCTS.find(p => p.id === rec.id);
+                    if (product) {
+                        plannerItems.push({ ...product, quantity: rec.qty, reason: rec.reason });
+                    }
+                });
+
+                renderPlannerItems();
+                el('planner-results').classList.remove('hidden');
+                
+            } catch (e) {
+                console.error(e);
+                alert("AI Planner is busy or API Key is missing.");
+            } finally {
+                btnText.classList.remove('hidden');
+                loader.classList.add('hidden');
+            }
+        };
+
+        function renderPlannerItems() {
+            const list = el('planner-items');
+            list.innerHTML = '';
+            
+            plannerItems.forEach((item, idx) => {
+                const row = document.createElement('div');
+                row.className = 'px-6 py-4 grid grid-cols-12 gap-4 items-center border-b border-stone-100';
+                row.innerHTML = `
+                    <div class="col-span-2 flex justify-center">
+                        <input type="number" value="${item.quantity}" onchange="updatePlannerQty(${idx}, this.value)" class="w-16 p-2 border rounded text-center font-bold">
+                    </div>
+                    <div class="col-span-6">
+                        <p class="font-bold text-stone-800">${item.name}</p>
+                        <p class="text-xs text-stone-500 italic">${item.reason || ''}</p>
+                    </div>
+                    <div class="col-span-2 font-medium text-stone-600">
+                        ${formatCurrency(item.price * item.quantity)}
+                    </div>
+                    <div class="col-span-2 text-right">
+                        <button onclick="removePlannerItem(${idx})" class="text-red-400 hover:text-red-600 font-bold">✕</button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        window.updatePlannerQty = function(idx, val) {
+            plannerItems[idx].quantity = parseInt(val);
+            renderPlannerItems();
+        };
+
+        window.removePlannerItem = function(idx) {
+            plannerItems.splice(idx, 1);
+            renderPlannerItems();
+        };
+
+        window.saveCurrentPlan = function() {
+            const name = el('plan-name').value || 'Untitled Plan';
+            if(plannerItems.length === 0) return;
+            
+            savedPlans.push({
+                name: name,
+                items: [...plannerItems]
+            });
+            localStorage.setItem('harvest_plans', JSON.stringify(savedPlans));
+            renderSavedPlans();
+            showToast("Plan saved!");
+        };
+
+        window.loadPlan = function(idx) {
+            const plan = savedPlans[idx];
+            if(!plan) return;
+            
+            plannerItems = [...plan.items];
+            el('plan-name').value = plan.name;
+            renderPlannerItems();
+            el('planner-results').classList.remove('hidden');
+            showToast(`Loaded plan: ${plan.name}`);
+        };
+
+        window.deletePlan = function(idx) {
+            if(confirm("Delete this plan?")) {
+                savedPlans.splice(idx, 1);
+                localStorage.setItem('harvest_plans', JSON.stringify(savedPlans));
+                renderSavedPlans();
+            }
+        };
+
+        window.clearPlan = function() {
+            plannerItems = [];
+            el('planner-items').innerHTML = '';
+            el('planner-results').classList.add('hidden');
+            el('plan-name').value = '';
+        };
+
+        window.addAllPlannerItems = function() {
+            if(plannerItems.length === 0) return;
+            
+            plannerItems.forEach(item => {
+                addToCart(item.id, item.quantity, false);
+            });
+            
+            showToast("Items added to cart!");
+            switchView('cart');
+        };
+
+        // --- FORECAST LOGIC ---
+        window.generateSeasonalityReport = async function() {
+            const apiKey = getApiKey();
+            if(!apiKey) {
+                 const userKey = prompt("Demo Mode: Please enter a Google Gemini API Key to use AI features:");
+                 if(userKey) localStorage.setItem('gemini_api_key_override', userKey);
+                 else return;
+            }
+
+            const month = new Date().toLocaleString('default', { month: 'long' });
+            el('forecast-month').innerText = month;
+            el('seasonality-loading').classList.remove('hidden');
+            el('seasonality-content').innerHTML = '';
+
+            try {
+                const ai = new GoogleGenAI({ apiKey: getApiKey() });
+                const response = await ai.models.generateContent({
+                    model: 'gemini-2.5-flash',
+                    contents: `Act as a procurement expert. Analyze produce seasonality for ${month} in North America.
+                    Generate a report with 3 sections:
+                    1. "Peak Season" (Best flavor & price now)
+                    2. "Going Out" (Last chance to buy)
+                    3. "Coming Soon" (Prepare menus for next month)
+                    
+                    Format the response as simple HTML (<h3>, <ul>, <li>, <p>). No markdown block quotes.`
+                });
+
+                el('seasonality-content').innerHTML = response.text;
+            } catch(e) {
+                console.error(e);
+                el('seasonality-content').innerHTML = `<p class="text-red-500">Failed to load forecast. Please check connection.</p>`;
+            } finally {
+                el('seasonality-loading').classList.add('hidden');
+            }
+        };
+
+        // --- VOICE LOGIC ---
+        // Check browser support
+        if (!('webkitSpeechRecognition' in window)) {
+            el('voice-btn').style.display = 'none';
+        }
+
+        let recognition;
+        let isListening = false;
+
+        window.toggleVoice = function() {
+            if (isListening) {
+                recognition.stop();
+                return;
+            }
+
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = currentLang === 'es' ? 'es-ES' : 'en-US';
+            
+            recognition.onstart = function() {
+                isListening = true;
+                el('voice-btn').classList.add('mic-pulse', 'bg-red-600');
+                el('voice-btn').classList.remove('bg-emerald-600');
+                showToast("Listening... Say your order.");
+            };
+
+            recognition.onend = function() {
+                isListening = false;
+                el('voice-btn').classList.remove('mic-pulse', 'bg-red-600');
+                el('voice-btn').classList.add('bg-emerald-600');
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                showToast(`Heard: "${transcript}"`);
+                processVoiceOrder(transcript);
+            };
+
+            recognition.start();
+        };
+
+        async function processVoiceOrder(text) {
+            const apiKey = getApiKey();
+            if(!apiKey) {
+                 const userKey = prompt("Demo Mode: Please enter a Google Gemini API Key to use AI features:");
+                 if(userKey) localStorage.setItem('gemini_api_key_override', userKey);
+                 else return;
+            }
+
+            showToast("AI Processing Order...");
+            try {
+                const ai = new GoogleGenAI({ apiKey: getApiKey() });
+                const productContext = PRODUCTS.map(p => `${p.id}: ${p.name}`).join('\n');
+                
+                const response = await ai.models.generateContent({
+                    model: 'gemini-2.5-flash',
+                    contents: `User said: "${text}".
+                    Match items to this catalog:
+                    ${productContext}
+                    
+                    Return JSON: { "items": [ { "id": 1, "qty": 2 } ] }
+                    If no match, return empty items array.`,
+                     config: { responseMimeType: "application/json" }
+                });
+
+                const result = JSON.parse(response.text);
+                if (result.items && result.items.length > 0) {
+                    let count = 0;
+                    result.items.forEach(item => {
+                         addToCart(item.id, item.qty || 1, false);
+                         count++;
+                    });
+                    showToast(`Added ${count} items to cart!`);
+                    switchView('cart');
+                } else {
+                    showToast("Couldn't match items. Try again.");
+                }
+            } catch(e) {
+                console.error(e);
+                showToast("Error processing voice order.");
+            }
+        }
+
+        // --- LOCALIZATION ---
+        window.toggleLangMenu = function() {
+             const menu = el('lang-menu');
+             menu.classList.toggle('hidden');
+        };
+
+        window.changeLanguage = function(lang) {
+             currentLang = lang;
+             el('current-lang').innerText = lang.toUpperCase();
+             el('lang-menu').classList.add('hidden');
+             
+             // Update Fonts
+             document.body.classList.remove('lang-zh', 'lang-hi');
+             if (lang === 'zh') document.body.classList.add('lang-zh');
+             if (lang === 'hi') document.body.classList.add('lang-hi');
+
+             // Update Text Content
+             const keys = TRANSLATIONS[lang];
+             document.querySelectorAll('[data-i18n]').forEach(elem => {
+                 const key = elem.getAttribute('data-i18n');
+                 if(keys[key]) elem.innerHTML = keys[key];
+             });
+             
+             // Re-render lists to update content
+             renderFilters();
+             renderFilteredProducts();
+             renderCart();
+             updateAuthUI();
+        };
+
+    </script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

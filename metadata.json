@@ -1,0 +1,7 @@
+{
+  "name": "The Nurserie Wholesale",
+  "description": "The professional wholesale produce division of The Nurserie. Source bulk farm-fresh crates directly from growers. AI-powered procurement for restaurants, schools, and families.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
